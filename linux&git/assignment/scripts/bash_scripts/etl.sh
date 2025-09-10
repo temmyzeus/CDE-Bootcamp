@@ -4,8 +4,8 @@
 source .env.etl
 echo "🔃 Environment variables loaded"
 
-# Provide a list of variable names and confirm, they all have values in them
-# most lively loaded from the .env file
+# List of variables loaded from the .env file
+# EXTRACT_FILE_URL=
 
 # Extract Layer Start
 EXTRACT_TARGET_DIR="raw"
@@ -32,17 +32,15 @@ fi
 
 # Transform Layer Start
 
-# Rename column name
-sed -i '1,1s/Variable_code/variable_code/g' "${EXTRACTED_FILE_PATH}"
-echo "✅ Successfully Renamed Column in ${EXTRACTED_FILE_PATH}"
-
 TRANSFORMED_LAYER_PATH="Transformed"
 TRANSFORMED_FILE_BASENAME="2023_year_finance.csv"
 mkdir -p "${TRANSFORMED_LAYER_PATH}"
 
 TRANSFORMED_FILE_PATH="${TRANSFORMED_LAYER_PATH%%/}/${TRANSFORMED_FILE_BASENAME}"
 
-awk -F, '{ print $1,$9,$5,$6 }' "${EXTRACTED_FILE_PATH}" > "${TRANSFORMED_FILE_PATH}"
+# Rename column name & select subset columns
+sed '1,1s/Variable_code/variable_code/g' | awk -F, '{ print $1,$9,$5,$6 }' > "${TRANSFORMED_FILE_PATH}"
+echo "✅ Successfully Renamed Column & Selected Subset Columns ..."
 
 if [ -f "${TRANSFORMED_FILE_PATH}" ] || [ $? != 0  ]; then
     echo "✅ Transform file ${TRANSFORMED_FILE_BASENAME} has been loaded into directory ${TRANSFORMED_LAYER_PATH}"
