@@ -9,5 +9,10 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
         np.nan,
         inplace=False
     )
+    df["Years runners-up"] = df["Years runners-up"].replace(
+        "—",
+        np.nan,
+        inplace=False
+    )
     print("Transform Completed!!!")
     return df

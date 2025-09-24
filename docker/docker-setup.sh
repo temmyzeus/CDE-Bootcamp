@@ -40,4 +40,4 @@ docker run -d -i -e POSTGRES_USER="${POSTGRES_USER}" -e POSTGRES_PASSWORD=${POST
 sleep 20
 
 echo "Creating ETL Container: ${ETL_CONTAINER_NAME} using Image: ${ETL_IMAGE_NAME}"
-docker run -d -i --network cde-docker-assignment -e PG_HOST="${POSTGRES_CONTAINER_NAME}" -e PG_PORT=5432 -e PG_USER="${POSTGRES_USER}" -e PG_PASSWD="${POSTGRES_PASSWORD}" --name "${ETL_CONTAINER_NAME}" "${ETL_IMAGE_NAME}"
+docker run -i --network cde-docker-assignment -e PG_HOST="${POSTGRES_CONTAINER_NAME}" -e PG_PORT=5432 -e PG_USER="${POSTGRES_USER}" -e PG_PASSWD="${POSTGRES_PASSWORD}" --name "${ETL_CONTAINER_NAME}" "${ETL_IMAGE_NAME}"
