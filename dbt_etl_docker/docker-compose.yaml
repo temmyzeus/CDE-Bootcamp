@@ -1,0 +1,50 @@
+name: "cde-etl-dbt"
+
+services:
+  python-data-extract:
+    image: temmyzeus/cde-extract-etl-data:latest
+    hostname: extract-data
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - etl-network
+
+  postgres:
+    image: temmyzeus/cde-etl-postgres:latest
+    hostname: postgres
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - etl-network
+
+  dbt:
+    image: temmyzeus/cde-etl-dbt:latest
+    hostname: dbt
+    # entrypoint: [ "bash" ]
+    command: run --profiles-dir /root/.dbt --profile CupScope --target dev --project-dir /usr/app/dbt/CupScope --select WorldCupCleaned_STG
+    volumes:
+      - ~/.dbt/profiles.yml:/root/.dbt/profiles.yml
+    networks:
+      - etl-network
+    depends_on:
+      - postgres
+      - python-data-extract
+
+  metabase:
+    image: metabase/metabase:v0.56.9
+    ports:
+      - "3000:3000"
+    networks:
+      - etl-network
+
+volumes:
+  pgdata:
+
+networks:
+  etl-network:

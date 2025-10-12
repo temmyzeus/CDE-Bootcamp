@@ -1,0 +1,27 @@
+FROM python:3.13
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN mkdir -p /home/etl
+
+WORKDIR /home/etl
+
+COPY ./requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
+COPY ./extract.py /home/etl/extract.py
+
+ENV POSTGRES_HOST=
+
+ENV POSTGRES_PORT=5432
+
+ENV POSTGRES_USER=
+
+ENV POSTGRES_PASSWORD=
+
+ENV POSTGRES_DB="postgres"
+
+ENTRYPOINT [ "python3" ]
+
+CMD [ "extract.py" ]
