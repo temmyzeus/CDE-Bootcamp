@@ -5,11 +5,11 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 
-POSTGRES_HOST = os.environ["PG_HOST"]
-POSTGRES_PORT = os.environ["PG_PORT"]
-POSTGRES_USER = os.environ["PG_USER"]
-POSTGRES_PASSWD = os.environ["PG_PASSWD"]
-POSTGRES_DB = os.environ["PG_DB"]
+POSTGRES_HOST = os.environ["POSTGRES_HOST"]
+POSTGRES_PORT = os.environ["POSTGRES_PORT"]
+POSTGRES_USER = os.environ["POSTGRES_USER"]
+POSTGRES_PASSWD = os.environ["POSTGRES_PASSWORD"]
+POSTGRES_DB = os.environ["POSTGRES_DB"]
 
 URL: str = "https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_finals"
 headers: dict[str, str] = {

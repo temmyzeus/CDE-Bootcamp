@@ -1,0 +1,49 @@
+name: "cde-etl-dbt-dev"
+
+services:
+  python-data-extract:
+    image: cde-extract-etl-data
+    build:
+      context: .
+      dockerfile: Dockerfile.extract
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=bootcamp
+      - POSTGRES_PASSWORD=bootcamp
+      - POSTGRES_DB=Staging_DB
+    volumes:
+      - ./extract.py:/home/etl/extract.py
+
+  postgres:
+    image: cde-etl-postgres
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    environment:
+      - POSTGRES_USER=bootcamp
+      - POSTGRES_PASSWORD=bootcamp
+      - POSTGRES_DB=Staging_DB
+    volumes:
+      - ./ddls:/docker-entrypoint-initdb.d
+
+  dbt:
+    image: cde-etl-dbt
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    volumes:
+      - ./dbt:/usr/app/dbt
+      - ~/.dbt/profiles.yml:/root/.dbt/profiles.yml
+
+  metabase:
+    image: metabase/metabase:v0.56.9
+    ports:
+      - "3000:3000"
+    networks:
+      - etl-network
+
+volumes:
+  pgdata:
+
+networks:
+  etl-network:

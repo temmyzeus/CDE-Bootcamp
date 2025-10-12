@@ -12,15 +12,15 @@ RUN pip install -r requirements.txt
 
 COPY ./extract.py /home/etl/extract.py
 
-ENV PG_HOST=
+ENV POSTGRES_HOST=
 
-ENV PG_PORT=5432
+ENV POSTGRES_PORT=5432
 
-ENV PG_USER=
+ENV POSTGRES_USER=
 
-ENV PG_PASSWD=
+ENV POSTGRES_PASSWORD=
 
-ENV PG_DB="postgres"
+ENV POSTGRES_DB="postgres"
 
 ENTRYPOINT [ "python3" ]
 
