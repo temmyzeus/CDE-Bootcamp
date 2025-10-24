@@ -1,0 +1,70 @@
+name: "core-sentiment"
+
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z
+    hostname: minio
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 1m
+    ports:
+      - "9000:9000" # Client Port
+      - "9001:9001" # Console Port
+    command: server /data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+      - MINIO_CONSOLE_ADDRESS=:9001
+    volumes:
+      - ./minio-data:/data
+    networks:
+      - core-sentiment-network
+
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z
+    entrypoint: >
+      /bin/bash -c "
+      sleep 5;
+      mc alias set core-sentiment-minio http://minio:9000/ ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc mb --ignore-existing core-sentiment-minio/wikimedia/pageviews_data_dumps
+      "
+    depends_on:
+      - minio
+    networks:
+      - core-sentiment-network
+
+  # trinodb:
+  #   image: trinodb/trino:477
+  #   hostname: trinodb
+  #   ports:
+  #     - "8085:8080"
+  #   networks:
+  #     - core-sentiment-network
+
+  # duckdb:
+  #   image: duckdb/duckdb:1.4.1
+  #   working_dir: /workspace
+  #   command: /duckdb -interactive -cmd 'CALL start_ui();' /workspace/CoreSentiment.duckdb
+  #   network_mode: "host"
+  #   volumes:
+  #     - ./duckdb-workspace:/workspace
+
+  postgres:
+    image: postgres:14
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=bootcamp
+      - POSTGRES_PASSWORD=bootcamp
+      - POSTGRES_DB=CoreSentimentDB
+    volumes:
+      - ./ddls:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - core-sentiment-network
+
+networks:
+  core-sentiment-network:
